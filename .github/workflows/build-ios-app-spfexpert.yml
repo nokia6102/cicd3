@@ -49,13 +49,15 @@ jobs:
 
       - name: Check Provisioning Profile existence
         run: |
-          if [ ! -f ~/Library/MobileDevice/Provisioning\ Profiles/$BUILD_PROVISION_PROFILE_BASE64 ]; then
+          PP_PATH=$RUNNER_TEMP/build_pp.mobileprovision  # 確保此路徑與之前解碼時的路徑一致
+          if [ ! -f $PP_PATH ]; then
             echo "Provisioning profile does not exist, check secrets or profile path."
             exit 1
           else
             echo "Provisioning profile exists."
           fi
-
+        shell: /bin/bash -e {0}
+        
       - name: Export ipa
         env:
           EXPORT_OPTIONS_PLIST: ${{ secrets.EXPORT_OPTIONS_PLIST }}
