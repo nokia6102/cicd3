@@ -9,7 +9,7 @@ jobs:
     runs-on: macos-latest
     steps:
       - name: Check Xcode version
-        run: /usr/bin/xcodebuild -version
+        run: xcodebuild -version
 
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -49,7 +49,7 @@ jobs:
 
       - name: Check Provisioning Profile existence
         run: |
-          PP_PATH=$RUNNER_TEMP/build_pp.mobileprovision  # 確保此路徑與之前解碼時的路徑一致
+          PP_PATH=$RUNNER_TEMP/build_pp.mobileprovision  # Ensure this path matches the path used in decoding
           if [ ! -f $PP_PATH ]; then
             echo "Provisioning profile does not exist, check secrets or profile path."
             exit 1
@@ -74,5 +74,5 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: app
-          path: $RUNNER_TEMP/build/I\ am\ Groot.ipa
+          path: ${{ runner.temp }}/build/I am Groot.ipa
           retention-days: 3
