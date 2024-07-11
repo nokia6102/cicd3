@@ -1,8 +1,18 @@
 name: "Build iOS app"
 
 on:
+  # 允許手動從 GitHub 的 run 這個 workflow
   workflow_dispatch:
     branches: [main]
+  # github action 的排程不一定會準時，目前實測排程都會延遲一個小時左右
+  # 詳細 schedule 設定請見：https://docs.github.com/zh/actions/using-workflows/events-that-trigger-workflows#schedule
+  schedule:
+    - cron: '30 0 * * 1-5' # 每週一至週五 AM 8:30 排程觸發 (這裡的時間是UTC, 所以台灣時區要+8)
+
+# 取消當前工作流程中正在進行的jobs或runs
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   build_with_signing:
@@ -81,8 +91,8 @@ jobs:
     name: Slack Notification
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    needs: [build_with_signing]  # 修改這裡
-    if: always()  # 總是執行，即使前面的工作失敗
+    needs: [ build ]
+    if: always() # 一律執行，不然前面的 job 失敗，後面的 job 都會被略過
     steps:
       - uses: actions/checkout@v4
       - name: Slack Notification
