@@ -76,3 +76,22 @@ jobs:
           name: app
           path: ${{ runner.temp }}/build/I am Groot.ipa
           retention-days: 3
+          
+  slackNotification:
+    name: Slack Notification
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    needs: [ build ]
+    if: always() # 一律執行，不然前面的 job 失敗，後面的 job 都會被略過
+    steps:
+      - uses: actions/checkout@v4
+      - name: Slack Notification
+        uses: rtCamp/action-slack-notify@v2
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+          SLACK_CHANNEL: SlackBotTestChannel
+          SLACK_COLOR: "${{ contains(needs.*.result, 'failure') && 'danger' || 'good' }}"
+          SLACK_LINK_NAMES: true
+          SLACK_TITLE: 'Build status'
+          SLACK_MESSAGE: "Build ${{ contains(needs.*.result, 'failure') && 'error' || 'completion' }}"
+          SLACK_USERNAME: "SH2.0 iOS : weekly build"
