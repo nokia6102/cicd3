@@ -91,7 +91,7 @@ jobs:
     name: Slack Notification
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    needs: [ build ]
+    needs: [ build_with_signing ]
     if: always() # 一律執行，不然前面的 job 失敗，後面的 job 都會被略過
     steps:
       - uses: actions/checkout@v4
